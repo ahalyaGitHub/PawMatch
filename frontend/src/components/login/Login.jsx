@@ -84,18 +84,33 @@ export default function Login(props) {
                             Log in
                         </button>
                     </div>
-                    <div className="flex justify-center text-gray-500 text-sm font-semibold">
-                        <span>Don’t have an account?</span>
-                        <Link to="/signup" className="text-sky-500 ml-1 hover:underline">
-                            Signup
-                        </Link>
-                    </div>
-                    <div className="flex justify-center text-gray-500 text-sm font-semibold">
-                        <span>Login as admin?</span>
-                        <Link to="/login/admin" className="text-sky-500 ml-1 hover:underline">
-                            Admin Login
-                        </Link>
-                    </div>
+                    
+                    <div>
+    {isAdmin ? (
+        <div className="flex justify-center text-gray-500 text-sm font-semibold">
+            <span>Login as user?</span>
+            <Link to="/login" className="text-sky-500 ml-1 hover:underline">
+                User Login
+            </Link>
+        </div>
+    ) : (
+        <div>
+            <div className="flex justify-center text-gray-500 text-sm font-semibold">
+                <span>Don’t have an account?</span>
+                <Link to="/signup" className="text-sky-500 ml-1 hover:underline">
+                    Signup
+                </Link>
+            </div>
+            <div className="flex justify-center text-gray-500 text-sm font-semibold">
+                <span>Login as admin?</span>
+                <Link to="/login/admin" className="text-sky-500 ml-1 hover:underline">
+                    Admin Login
+                </Link>
+            </div>
+        </div>
+    )}
+</div>
+
                 </form>
             </div>
         </div>
