@@ -90,6 +90,12 @@ export default function Login(props) {
                             Signup
                         </Link>
                     </div>
+                    <div className="flex justify-center text-gray-500 text-sm font-semibold">
+                        <span>Admin Login?</span>
+                        <Link to="/login/admin" className="text-sky-500 ml-1 hover:underline">
+                            Admin
+                        </Link>
+                    </div>
                 </form>
             </div>
         </div>
