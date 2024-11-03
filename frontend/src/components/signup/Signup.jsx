@@ -4,6 +4,7 @@ export default function Signup() {
     return (
         <div className="flex justify-center items-center min-h-screen bg-sky-200">
             <div className="flex flex-col gap-y-4 border border-solid w-11/12 sm:w-96 p-6 bg-white shadow-lg">
+            <div className='mx-auto text-lg font-bold'>Create your account</div>
                 <form action="" className="flex flex-col gap-y-4">
                     <div>
                         <input 

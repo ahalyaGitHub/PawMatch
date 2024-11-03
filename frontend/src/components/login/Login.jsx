@@ -46,7 +46,7 @@ export default function Login(props) {
             }
         } catch (error) {
             console.error('Error:', error.message);
-            setErrorMessage('An error occurred during login');
+            setErrorMessage('Wrong email or password');
         }
     };
 
@@ -101,7 +101,7 @@ export default function Login(props) {
                     Signup
                 </Link>
             </div>
-            <div className="flex justify-center text-gray-500 text-sm font-semibold">
+            <div className="flex justify-center text-gray-500 text-sm font-semibold mt-3">
                 <span>Login as admin?</span>
                 <Link to="/login/admin" className="text-sky-500 ml-1 hover:underline">
                     Admin Login
