@@ -13,8 +13,8 @@ export default function User() {
     const fetchPets = async (query = '') => {
         try {
             const url = query
-                ? `http://localhost:5000/pets/search?search=${query}`
-                : 'http://localhost:5000/pets'; // Endpoint to fetch all pets
+                ? `https://pet-adoption-jr7a.onrender.com/pets/search?search=${query}`
+                : 'https://pet-adoption-jr7a.onrender.com/pets'; // Endpoint to fetch all pets
             console.log('Fetching pets from:', url); // Log the URL
             const response = await axios.get(url);
             console.log('Pets fetched:', response.data); // Log the fetched data
