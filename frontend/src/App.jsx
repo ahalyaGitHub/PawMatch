@@ -3,7 +3,6 @@ import { BrowserRouter as Router, Route, Routes, redirect, Navigate, Outlet } fr
 import Login from './components/login/Login';
 import Signup from './components/signup/Signup';
 import User from './components/user/User';
-import Navbar from './components/navbar/Navbar';
 import Home from './components/home/Home';
 
 const ProtectedRoute = (props) => {

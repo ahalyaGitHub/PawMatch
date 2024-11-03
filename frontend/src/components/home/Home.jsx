@@ -1,15 +1,46 @@
-import React, { useRef } from 'react';
+import React, { useRef, useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import Middle from '../middle/Middle';
 import ContactInfo from '../contactInfo/ContactInfo';
+import jwtDecode from 'jwt-decode'; // Ensure this line is correct
 
 export default function Home() {
     const middleRef = useRef(null);
+    const [username, setUsername] = useState(null);
+
+    useEffect(() => {
+        const token = localStorage.getItem('token');
+        if (token) {
+            const decoded = jwtDecode(token);
+            const userId = decoded.id;
+    
+            fetch(`http://localhost:5000/users/${userId}`, {
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Failed to fetch user data');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    setUsername(data.username);
+                })
+                .catch(error => console.error('Error fetching user data:', error));
+        }
+    }, []);
 
     const handleScroll = () => {
         if (middleRef.current) {
             middleRef.current.scrollIntoView({ behavior: 'smooth' });
         }
+    };
+
+    const handleLogout = () => {
+        localStorage.removeItem('token');
+        setUsername(null);
     };
 
     return (
@@ -19,7 +50,14 @@ export default function Home() {
                 <div className="container mx-auto flex justify-between items-center h-20">
                     <a href="#" className="text-2xl font-bold pl-4 text-white">Pet Adoption Center</a>
                     <div className="flex space-x-6">
-                    <Link to="/login" className="text-lg font-bold text-white hover:text-sky-500">Log in</Link>
+                        {username ? (
+                            <>
+                                <span className="text-lg font-bold text-white">Logged in as {username}</span>
+                                <button onClick={handleLogout} className="text-lg font-bold text-white hover:text-sky-500">Log out</button>
+                            </>
+                        ) : (
+                            <Link to="/login" className="text-lg font-bold text-white hover:text-sky-500">Log in</Link>
+                        )}
                         <Link to="/contact" className="text-lg font-bold text-white hover:text-sky-500">Contact</Link>
                     </div>
                 </div>
@@ -27,9 +65,7 @@ export default function Home() {
 
             {/* Home Page Content */}
             <div className="h-screen flex flex-col items-center justify-center">
-
-                <div className="container mx-auto flex flex-col items-center md:flex-col lg:flex-row lg:items-start  p-5 md:p-10 space-y-8 lg:space-y-0 lg:space-x-10">
-
+                <div className="container mx-auto flex flex-col items-center md:flex-col lg:flex-row lg:items-start p-5 md:p-10 space-y-8 lg:space-y-0 lg:space-x-10">
                     {/* Image Above Content on Medium Screens and up */}
                     <div className="flex justify-center w-full md:w-auto lg:w-1/2 lg:order-2 mb-5 lg:mb-0">
                         <img
@@ -52,8 +88,6 @@ export default function Home() {
                         </button>
                     </div>
                 </div>
-
-
             </div>
 
             {/* Middle and ContactInfo Section */}
