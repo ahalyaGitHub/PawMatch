@@ -91,9 +91,9 @@ export default function Login(props) {
                         </Link>
                     </div>
                     <div className="flex justify-center text-gray-500 text-sm font-semibold">
-                        <span>Admin Login?</span>
+                        <span>Login as admin?</span>
                         <Link to="/login/admin" className="text-sky-500 ml-1 hover:underline">
-                            Admin
+                            Admin Login
                         </Link>
                     </div>
                 </form>
