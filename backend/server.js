@@ -13,7 +13,7 @@ const PORT=5000;
 app.use(express.json());
 app.use(cors());
 
-mongoose.connect('mongodb://localhost:27017/pet-adoption', {})
+mongoose.connect('mongodb+srv://ahalyar2004:V3o4P54brHVOj2la@cluster0.0q1sw.mongodb.net/pet-adoption', {})
 .then(()=>{
     console.log('MongoDB connected');
 })
