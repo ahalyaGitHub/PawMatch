@@ -3,12 +3,23 @@ const jwt = require('jsonwebtoken');
 const User = require('../models/userModel');
 
 // Add user data (Sign up)
-const addUser = async(req, res) =>{
-    try{
-        const user= new User(req.body);
-        user.save();
-        res.status(200).json(user);
-    } catch(err) {
+const addUser = async (req, res) => {
+    const { name, phone, email, password } = req.body;
+    
+    try {
+        // Check if email already exists
+        const existingUser = await User.findOne({ email });
+        if (existingUser) {
+            return res.status(400).json({ message: 'Email already exists' });
+        }
+
+        // Hash the password before saving the user
+        const hashedPassword = await bcrypt.hash(password, 10);
+        const user = new User({ name, phone, email, password: hashedPassword });
+        
+        await user.save();
+        res.status(200).json({ message: 'User registered successfully' });
+    } catch (err) {
         res.status(500).json({ error: err.message });
     }
 };
