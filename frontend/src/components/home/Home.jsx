@@ -1,8 +1,8 @@
 import React, { useRef, useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
+import { jwtDecode } from 'jwt-decode';
 import Middle from '../middle/Middle';
 import ContactInfo from '../contactInfo/ContactInfo';
-import jwtDecode from 'jwt-decode'; // Ensure this line is correct
 
 export default function Home() {
     const middleRef = useRef(null);
@@ -13,8 +13,8 @@ export default function Home() {
         if (token) {
             const decoded = jwtDecode(token);
             const userId = decoded.id;
-    
-            fetch(`http://localhost:5000/users/${userId}`, {
+
+            fetch(`https://pet-adoption-jr7a.onrender.com/users/${userId}`, {
                 headers: {
                     'Authorization': `Bearer ${token}`
                 }
@@ -58,7 +58,7 @@ export default function Home() {
                         ) : (
                             <Link to="/login" className="text-lg font-bold text-white hover:text-sky-500">Log in</Link>
                         )}
-                        <Link to="/contact" className="text-lg font-bold text-white hover:text-sky-500">Contact</Link>
+                        <button className="text-lg font-bold text-white hover:text-sky-500" onClick={handleScroll}>Contact</button>
                     </div>
                 </div>
             </nav>

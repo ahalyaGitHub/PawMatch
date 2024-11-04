@@ -13,7 +13,7 @@ export default function Login(props) {
         e.preventDefault();
         setErrorMessage('');
         try {
-            const response = await fetch(`http://localhost:5000/${isAdmin ? 'admins' : 'users'}/login`, {
+            const response = await fetch(`https://pet-adoption-jr7a.onrender.com/${isAdmin ? 'admins' : 'users'}/login`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
