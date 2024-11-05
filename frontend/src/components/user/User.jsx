@@ -1,40 +1,42 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 import Navbar from '../navbar/Navbar';
 
 export default function User() {
     const [pets, setPets] = useState([]);
     const [searchTerm, setSearchTerm] = useState('');
+    const navigate = useNavigate();
 
     useEffect(() => {
-        fetchPets(); // Fetch all pets on component mount
+        fetchPets();
     }, []);
 
     const fetchPets = async (query = '') => {
         try {
-            const url = query
-                ? `https://pet-adoption-jr7a.onrender.com/pets/search?search=${query}`
-                : 'https://pet-adoption-jr7a.onrender.com/pets'; // Endpoint to fetch all pets
-            console.log('Fetching pets from:', url); // Log the URL
+            const url = query ? `https://pet-adoption-jr7a.onrender.com/pets/search?search=${query}` : 'https://pet-adoption-jr7a.onrender.com/pets';
             const response = await axios.get(url);
-            console.log('Pets fetched:', response.data); // Log the fetched data
             setPets(response.data);
         } catch (err) {
             console.error('Error fetching pets:', err.response ? err.response.data : err);
         }
     };
 
-    const handleSearch = (e) => {
-        e.preventDefault();
-        fetchPets(searchTerm); // Fetch pets based on current search term
+    const handleInterestedClick = (petId) => {
+        const token = localStorage.getItem('token');
+        if (token) {
+            navigate(`/adopt/${petId}`);
+        } else {
+            alert('Please log in to express interest in adopting a pet.');
+            navigate('/login');
+        }
     };
 
     return (
         <>
             <Navbar />
-
             <div className="container mx-auto mt-8 px-4">
-                <form className="flex justify-center mb-8" onSubmit={handleSearch}>
+                <form className="flex justify-center mb-8" onSubmit={(e) => { e.preventDefault(); fetchPets(searchTerm); }}>
                     <input
                         className="w-full md:w-1/2 lg:w-1/3 px-4 py-2 border border-gray-300 focus:outline-none focus:border-blue-500 font-semibold"
                         type="search"
@@ -43,7 +45,7 @@ export default function User() {
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
                     />
-                    <button className="bg-sky-500 text-white px-4 py-2 hover:bg-sky-600 focus:outline-none font-bold" type="submit">
+                    <button className="bg-sky-500 text-white px-4 py-2 hover:bg-sky-600 font-bold" type="submit">
                         Search
                     </button>
                 </form>
@@ -63,7 +65,10 @@ export default function User() {
                                     <p className="text-gray-600"><span className="font-semibold">Breed:</span> {pet.breed}</p>
                                     <p className="text-gray-600"><span className="font-semibold">Description:</span> {pet.description}</p>
                                     <p className="text-gray-600"><span className="font-semibold">Vaccine:</span> {pet.vaccine}</p>
-                                    <button className="mt-4 bg-blue-500 text-white px-4 py-2 hover:bg-blue-600 font-semibold">
+                                    <button
+                                        className="mt-4 bg-blue-500 text-white px-4 py-2 hover:bg-blue-600 font-semibold"
+                                        onClick={() => handleInterestedClick(pet._id)}
+                                    >
                                         Interested
                                     </button>
                                 </div>

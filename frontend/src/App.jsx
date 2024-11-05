@@ -1,35 +1,35 @@
 import React from 'react';
-import { BrowserRouter as Router, Route, Routes, redirect, Navigate, Outlet } from 'react-router-dom';
+import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
 import Login from './components/login/Login';
 import Signup from './components/signup/Signup';
 import User from './components/user/User';
 import Home from './components/home/Home';
+import AdoptionForm from './components/adoptionForm/AdoptionForm';
 
-const ProtectedRoute = (props) => {
-  const { children } = props
-  console.log(props)
-  const isLoggedIn = !!localStorage.getItem('token') // !! will convert anything to boolean
-  if (!isLoggedIn) {
-    return <Navigate to={'/login'} replace />
-  }
-  return children
-}
+const ProtectedRoute = ({ children }) => {
+  const isLoggedIn = !!localStorage.getItem('token'); // Double exclamation to convert to boolean
+  return isLoggedIn ? children : <Navigate to="/login" replace />;
+};
 
 export default function App() {
   return (
-    <>
-      <Router>
-
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path='/pets' element={<ProtectedRoute>
+    <Router>
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/login/admin" element={<Login isAdmin />} />
+        <Route path="/signup" element={<Signup />} />
+        <Route path="/pets" element={
+          <ProtectedRoute>
             <User />
-          </ProtectedRoute>} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/login/admin" element={<Login isAdmin />} />
-          <Route path="/signup" element={<Signup />} />
-        </Routes>
-      </Router>
-    </>
-  )
-};
+          </ProtectedRoute>
+        }/>
+        <Route path="/adopt/:petId" element={
+          <ProtectedRoute>
+            <AdoptionForm />
+          </ProtectedRoute>
+        }/>
+      </Routes>
+    </Router>
+  );
+}

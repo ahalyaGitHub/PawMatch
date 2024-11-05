@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
 export default function Middle() {
     const [pets, setPets] = useState([]);
+    const navigate = useNavigate();
 
     useEffect(() => {
         const fetchPets = async () => {
@@ -17,6 +18,15 @@ export default function Middle() {
 
         fetchPets();
     }, []);
+
+    const handleInterestedClick = () => {
+        const token = localStorage.getItem('token');
+        if (token) {
+            navigate('/pets');
+        } else {
+            navigate('/login');
+        }
+    };
 
     return (
         <>
@@ -35,28 +45,25 @@ export default function Middle() {
                                 <p className="text-gray-600"><span className="font-semibold">Breed:</span> {pet.breed}</p>
                                 <p className="text-gray-600"><span className="font-semibold">Description:</span> {pet.description}</p>
                                 <p className="text-gray-600"><span className="font-semibold">Vaccine:</span> {pet.vaccine}</p>
-                                <Link to="/pets">
-                                <button className="mt-4 bg-blue-500 text-white px-4 py-2 hover:bg-blue-600 font-semibold">
+                                <button
+                                    className="mt-4 bg-blue-500 text-white px-4 py-2 hover:bg-blue-600 font-semibold"
+                                    onClick={handleInterestedClick}
+                                >
                                     Interested
                                 </button>
-                                </Link>
                             </div>
-
-
                         </div>
-
                     ))
                 )}
             </div>
             <div className="flex justify-center my-5">
-                <Link to="/pets">
-                    <span className="font-bold text-lg text-sky-500 hover:underline cursor-pointer">
-                        Explore more...
-                    </span>
-                </Link>
+                <span
+                    onClick={handleInterestedClick}
+                    className="font-bold text-lg text-sky-500 hover:underline cursor-pointer"
+                >
+                    Explore more...
+                </span>
             </div>
-
-
         </>
-    )
+    );
 }

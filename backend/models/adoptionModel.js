@@ -11,7 +11,7 @@ const AdoptionSchema = new mongoose.Schema({
         ref: 'Pet',
         required: true
     },
-    status: { type: String, enum: ['requested', 'revoke', 'adopted'], required: true},
+    status: { type: String, enum: ['interested', 'revoke', 'adopted'], required: true},
     requestedDate: { type: Date },
     resolvedDate: { type: Date },
     reasonToAdopt: { type: String },
