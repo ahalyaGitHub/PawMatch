@@ -44,3 +44,15 @@ exports.loginAdmin = async (req, res) => {
         return res.status(500).send('Server error');
     }
 };
+
+exports.getAdminName = async (req, res) => {
+    try {
+        const admin = await Admin.findById(req.params.id).select('name');
+        if (!user) {
+            return res.status(404).json({ message: 'Admin not found' });
+        }
+        res.json({ adminname: admin.name });
+    } catch (error) {
+        res.status(500).json({ message: 'Error fetching admin data' });
+    }
+};

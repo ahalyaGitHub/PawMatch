@@ -7,6 +7,7 @@ import Home from './components/home/Home';
 import AdoptionForm from './components/adoptionForm/AdoptionForm';
 import AdminDashboard from './components/adminDashboard/AdminDashboard';
 import AdminAdoptionRequests from './components/adminAdoptionRequests/AdminAdoptionRequests';
+import ContactInfo from './components/contactInfo/ContactInfo';
 
 
 const ProtectedRoute = ({ children }) => {
@@ -19,10 +20,10 @@ export default function App() {
     <Router>
       <Routes>
         <Route path="/" element={<Home />} />
+        <Route path='/admin/dashboard' element={<AdminDashboard />} />
         <Route path="/login" element={<Login />} />
-        <Route path="/login/admin" element={<Login isAdmin />} />
-        <Route path='/adminDashboard' elememt={<AdminDashboard />} />
-        <Route path='/adminAdoptionRequest' element={<AdminAdoptionRequests />} /> 
+        <Route path="/login/admin" element={<Login isAdmin />} />       
+        <Route path='/admin/adoptionRequest' element={<AdminAdoptionRequests />} /> 
         <Route path="/signup" element={<Signup />} />
         <Route path="/pets" element={
           <ProtectedRoute>

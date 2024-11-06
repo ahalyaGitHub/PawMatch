@@ -1,4 +1,4 @@
-// AdminDashboard.js
+
 import { useNavigate } from 'react-router-dom';
 
 function AdminDashboard() {
@@ -6,10 +6,17 @@ function AdminDashboard() {
 
   // Handler for Users box click
   const handleUserBoxClick = () => {
-    navigate('/adminAdoptionRequest'); // Redirect to AdminAdoptionRequest page
+    navigate('/admin/adoptionRequest'); // Redirect to AdminAdoptionRequest page
   };
 
+  const handleScroll = () => {
+    if (contactRef.current) {
+        contactRef.current.scrollIntoView({ behavior: 'smooth' });
+    }
+};
+
   return (
+    <>
     <div className="min-h-screen flex flex-col items-center justify-center bg-gray-100 p-6">
       <h1 className="text-2xl font-bold mb-8">Admin Dashboard</h1>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 w-full max-w-3xl">
@@ -30,6 +37,11 @@ function AdminDashboard() {
         </div>
       </div>
     </div>
+   
+      
+ 
+    
+    </>
   );
 }
 

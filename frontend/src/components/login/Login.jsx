@@ -39,11 +39,9 @@ export default function Login(props) {
             localStorage.setItem('token', token);
 
             // Redirect based on user role
-            if (userRole === 'admin') {
-                navigate('/admin/dashboard');
-            } else {
+       
                 navigate('/'); // Redirect to home page
-            }
+            
         } catch (error) {
             console.error('Error:', error.message);
             setErrorMessage('Wrong email or password');

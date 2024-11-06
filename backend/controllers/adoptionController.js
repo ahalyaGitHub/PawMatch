@@ -16,6 +16,7 @@ const addAdoption = async (req, res) => {
             status: 'interested',
             requestedDate: new Date(),
             reasonToAdopt,
+            
         });
 
         await adoption.save();
