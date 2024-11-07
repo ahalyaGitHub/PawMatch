@@ -2,14 +2,26 @@ const Pet = require('../models/petModel');
 
 // Create pet data
 const addPet = async (req, res) => {
-    try{
-        const pet = await Pet.insertMany(req.body);
-        res.status(200).json(pet);
-    } catch(err) {
-        res.status(404).json({ error: err.message });
+    try {
+        const { category, breed, description, gender, vaccine, age } = req.body;
+        const imageUrl = req.file ? `/uploads/${req.file.filename}` : '';
+
+        const pet = new Pet({
+            category,
+            breed,
+            description,
+            gender,
+            vaccine,
+            age,
+            imageUrl
+        });
+
+        await pet.save();
+        res.status(201).json(pet);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
     }
 };
-
 // List all pets
 const getAllPets = async (req, res) => {
     try{
@@ -45,18 +57,24 @@ const recentPetDetails = async (req, res) =>{
 };
 
 // Update pet data
-const updatePet = async (req, res) =>{
+const updatePet = async (req, res) => {
     try {
-        const pet = await Pet.findById(req.params.id);
-        if(!pet){
+        const { id } = req.params;
+        const updatedData = { ...req.body };
+
+        if (req.file) {
+            updatedData.imageUrl = `/uploads/${req.file.filename}`;
+        }
+
+        const pet = await Pet.findByIdAndUpdate(id, updatedData, { new: true });
+        if (!pet) {
             return res.status(404).json({ message: 'Pet not found' });
         }
-        pet.set(req.body);
-        await pet.save();
+
         res.status(200).json(pet);
-    } catch(err) {
+    } catch (err) {
         res.status(500).json({ error: err.message });
-    } 
+    }
 };
 
 // Delete pet data
@@ -79,16 +97,38 @@ const searchPets = async (req, res) => {
     try {
         const pets = await Pet.find({
             $or: [
+                { name: { $regex: searchQuery, $options: 'i' } },
                 { breed: { $regex: searchQuery, $options: 'i' } },
-                { age: { $regex: searchQuery, $options: 'i' } },
                 { category: { $regex: searchQuery, $options: 'i' } },
+                { gender: { $regex: searchQuery, $options: 'i' } }
             ]
         });
-        res.json(pets);
+        res.status(200).json(pets);
     } catch (error) {
         res.status(500).json({ error: 'Error fetching pets' });
     }
   };
+
+  const updatePetStatus = async(req, res) => {
+    const { petId } = req.params;
+    const { status } = req.body;
+
+    try {
+        const pet = await Pet.findById(petId);
+        if (!pet) {
+            return res.status(404).json({ message: 'Pet not found' });
+        }
+
+        // Update pet status
+        pet.status = status; // Status can be 'interested', 'adopted', etc.
+        await pet.save();
+
+        res.status(200).json(pet);
+    } catch (err) {
+        res.status(500).json({ message: err.message });
+    }
+  }
+
 
 module.exports={
    addPet,
@@ -98,4 +138,5 @@ module.exports={
    updatePet,
    deletePet,
    searchPets,
+   updatePetStatus,
 };

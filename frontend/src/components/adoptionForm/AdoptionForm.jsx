@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { jwtDecode } from 'jwt-decode';
+import { jwtDecode } from 'jwt-decode'; // Make sure to import without curly braces
 import Navbar from '../navbar/Navbar';
 
 export default function AdoptionForm({ markPetAsRequested }) {
@@ -20,45 +20,49 @@ export default function AdoptionForm({ markPetAsRequested }) {
 
     useEffect(() => {
         const checkStatus = async () => {
-            if (userId) {
-                const res = await fetch(`https://pet-adoption-jr7a.onrender.com/adoptions/status/${userId}/${petId}`);
-                const data = await res.json();
-                if (data.status === 'interested') {
-                    setIsInterested(true);
-                }
+            const res = await fetch(`http://localhost:5000/adoptions/status/${petId}`);
+            const data = await res.json();
+            if (data.status === 'interested') {
+                setIsInterested(true);
             }
         };
         checkStatus();
-    }, [userId, petId]);
+    }, [petId]);
+    
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         if (!reasonToAdopt) {
             alert("Please provide a reason for adoption.");
-            navigate('/pets'); // Redirect to the pets page if validation fails
             return;
         }
-
+    
         try {
-            const res = await fetch('https://pet-adoption-jr7a.onrender.com/adoptions/add', {
+            const res = await fetch('http://localhost:5000/adoptions/add', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ userId, petId, reasonToAdopt }),
             });
-
+    
             if (res.ok) {
                 alert('Adoption request submitted successfully!');
-                markPetAsRequested(petId);
+                markPetAsRequested(petId); // Notify User component to update pet status
                 setIsInterested(true);
-                navigate('/users'); // Redirect to the users page upon successful submission
+                navigate('/users');
             } else {
                 const errorData = await res.json();
-                alert(`Error: ${errorData.error}`);
+                if (errorData.error === "This pet already has an interested user.") {
+                    setIsInterested(true);
+                    alert("This pet is already marked as 'interested' by another user.");
+                } else {
+                    alert(`Error: ${errorData.error}`);
+                }
             }
         } catch (error) {
             console.error('Error submitting adoption request:', error);
         }
     };
+    
 
     return (
         <>
@@ -78,17 +82,13 @@ export default function AdoptionForm({ markPetAsRequested }) {
                         required
                     />
                 </div>
-                {isInterested ? (
-                    <p className="w-full text-gray-700 text-center py-2 font-bold"><span className='text-red-500'>Status: </span>Interested</p> // Display text if already interested
-                ) : (
-                    <button
-                        type="submit"
-                        className="w-full bg-blue-500 text-white py-2 rounded hover:bg-blue-600 transition duration-300"
-                        disabled={isInterested} // Disable if already interested
-                    >
-                        Submit Request
-                    </button>
-                )}
+                <button
+                    type="submit"
+                    className="w-full bg-blue-500 text-white py-2 rounded hover:bg-blue-600 transition duration-300"
+                    disabled={isInterested} // Disable if already interested
+                >
+                    Submit Request
+                </button>
             </form>
         </div>
         </>
