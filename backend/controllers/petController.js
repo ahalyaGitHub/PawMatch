@@ -7,6 +7,7 @@ const addPet = async (req, res) => {
         const imageUrl = req.file ? `/uploads/${req.file.filename}` : '';
 
         const pet = new Pet({
+            pet_id,
             category,
             breed,
             description,

@@ -1,4 +1,6 @@
 import React, { useEffect, useState } from 'react';
+import jsPDF from 'jspdf';
+import 'jspdf-autotable';
 import Navbar from '../navbar/Navbar';
 
 export default function AdminAdoptionRequests() {
@@ -8,20 +10,20 @@ export default function AdminAdoptionRequests() {
         const fetchRequests = async () => {
             const token = localStorage.getItem('token');
             try {
-                const res = await fetch('http://localhost:5000/adoptions', {
+                const res = await fetch('https://pet-adoption-jr7a.onrender.com/adoptions', {
                     headers: {
                         'Authorization': `Bearer ${token}`,
                     }
                 });
                 const requests = await res.json();
-    
+
                 const detailedRequests = await Promise.all(requests.map(async (request) => {
-                    const userRes = await fetch(`http://localhost:5000/users/${request.userId}`, {
+                    const userRes = await fetch(`https://pet-adoption-jr7a.onrender.com/users/${request.userId}`, {
                         headers: {
                             'Authorization': `Bearer ${token}`,
                         }
                     });
-                    const petRes = await fetch(`http://localhost:5000/pets/${request.petId}`, {
+                    const petRes = await fetch(`https://pet-adoption-jr7a.onrender.com/pets/${request.petId}`, {
                         headers: {
                             'Authorization': `Bearer ${token}`,
                         }
@@ -34,7 +36,7 @@ export default function AdminAdoptionRequests() {
                         pet
                     };
                 }));
-    
+
                 setAdoptionRequests(detailedRequests);
             } catch (error) {
                 console.error("Error fetching adoption requests:", error);
@@ -42,13 +44,11 @@ export default function AdminAdoptionRequests() {
         };
         fetchRequests();
     }, []);
-    
 
     const updateStatus = async (id, status) => {
         const token = localStorage.getItem('token');
         try {
-            // Update adoption status in the backend
-            await fetch(`http://localhost:5000/adoptions/${id}`, {
+            await fetch(`https://pet-adoption-jr7a.onrender.com/adoptions/${id}`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
@@ -57,20 +57,17 @@ export default function AdminAdoptionRequests() {
                 body: JSON.stringify({ status, resolvedDate: new Date() })
             });
     
-            // Update the pet's status in the frontend state
             setAdoptionRequests((prev) => 
                 prev.map((req) => (req._id === id ? { ...req, status } : req))
             );
     
-            // Also, update the pets' status if necessary (mark as adopted or interested)
-            // For example, after "Adopt" action, update the pet's status
-            const petUpdateRes = await fetch(`http://localhost:5000/pets/status/${id}`, {
+            const petUpdateRes = await fetch(`https://pet-adoption-jr7a.onrender.com/pets/status/${id}`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
                     'Authorization': `Bearer ${token}`
                 },
-                body: JSON.stringify({ status }) // You can pass 'adopted' or 'interested'
+                body: JSON.stringify({ status })
             });
     
             if (!petUpdateRes.ok) {
@@ -81,7 +78,57 @@ export default function AdminAdoptionRequests() {
             console.error("Error updating adoption status:", error);
         }
     };
-    
+
+    // Generate PDF for a single adoption request
+    const generateSingleReport = (request) => {
+        try {
+            const doc = new jsPDF();
+            doc.text('Adoption Request Report', 10, 10);
+            
+            doc.text(`Adopter Name: ${request.user?.name || 'Not Available'}`, 10, 20);
+            doc.text(`Email: ${request.user?.email || 'Not Available'}`, 10, 30);
+            doc.text(`Phone: ${request.user?.phone || 'Not Available'}`, 10, 40);
+
+            doc.text(`Pet ID: ${request.pet?.pet_id || 'Not Available'}`, 10, 60);
+            doc.text(`Breed: ${request.pet?.breed || 'Not Available'}`, 10, 70);
+            doc.text(`Requested Date: ${new Date(request.requestedDate).toLocaleDateString()}`, 10, 80);
+            doc.text(`Status: ${request.status}`, 10, 90);
+            doc.text(`Resolved Date: ${request.resolvedDate ? new Date(request.resolvedDate).toLocaleDateString() : 'Pending'}`, 10, 100);
+
+            doc.save(`Adoption_Report_${request._id}.pdf`);
+        } catch (error) {
+            console.error("Error generating report:", error);
+        }
+    };
+
+    // Generate PDF for all adoption requests
+    const generateAllReports = () => {
+        try {
+            const doc = new jsPDF();
+            doc.text('All Adoption Requests Report', 10, 10);
+
+            const headers = [['Adopter Name', 'Email', 'Pet ID', 'Breed', 'Status', 'Requested Date', 'Resolved Date']];
+            const data = adoptionRequests.map((request) => [
+                request.user?.name || 'N/A',
+                request.user?.email || 'N/A',
+                request.pet?.pet_id || 'N/A',
+                request.pet?.breed || 'N/A',
+                request.status,
+                new Date(request.requestedDate).toLocaleDateString(),
+                request.resolvedDate ? new Date(request.resolvedDate).toLocaleDateString() : 'Pending'
+            ]);
+
+            doc.autoTable({
+                head: headers,
+                body: data,
+                startY: 20,
+            });
+
+            doc.save('All_Adoption_Requests_Report.pdf');
+        } catch (error) {
+            console.error("Error generating all reports:", error);
+        }
+    };
 
     return (
         <>
@@ -114,7 +161,7 @@ export default function AdminAdoptionRequests() {
 
                                 <div className="space-y-4">
                                     <h2 className="text-xl font-bold text-gray-800">Pet Information</h2>
-                                    <p className="text-gray-600"><strong>Pet Name:</strong> {request.pet?.pet_id || 'Not Available'}</p>
+                                    <p className="text-gray-600"><strong>Pet ID:</strong> {request.pet?.pet_id || 'Not Available'}</p>
                                     <p className="text-gray-600"><strong>Breed:</strong> {request.pet?.breed || 'Not Available'}</p>
                                 </div>
                             </div>
@@ -122,7 +169,7 @@ export default function AdminAdoptionRequests() {
                             <div className="flex justify-between mt-6 border-t pt-4">
                                 <button
                                     onClick={() => updateStatus(request._id, 'revoke')}
-                                    className="bg-red-500 hover:bg-red-600 text-white font-semibold py-2 px-6  transition duration-300"
+                                    className="bg-red-500 hover:bg-red-600 text-white font-semibold py-2 px-6 transition duration-300"
                                 >
                                     Rejected
                                 </button>
@@ -132,9 +179,21 @@ export default function AdminAdoptionRequests() {
                                 >
                                     Adopted
                                 </button>
+                                <button
+                                    onClick={() => generateSingleReport(request)}
+                                    className="bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-6 transition duration-300"
+                                >
+                                    Download Report
+                                </button>
                             </div>
                         </div>
                     ))}
+                    <button
+                        onClick={generateAllReports}
+                        className="bg-blue-500 hover:bg-blue-600 text-white font-semibold py-3 px-8 transition duration-300 mt-8"
+                    >
+                        Download All Reports
+                    </button>
                 </div>
             </div>
         </>

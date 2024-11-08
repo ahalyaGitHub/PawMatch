@@ -4,8 +4,8 @@ const bcrypt = require('bcrypt');
 const UserSchema = new mongoose.Schema({
     name: { type: String, required: true },
     phone: { type: Number, required: true },
-    email: { type: String, required: true },
-    password: { type: String},
+    email: { type: String, required: true, unique: true, match: /.+\@.+\..+/},
+    password: { type: String, required: true},
 });
 
 // Middleware to hash the password before saving the user

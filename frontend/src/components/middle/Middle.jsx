@@ -9,7 +9,7 @@ export default function Middle() {
     useEffect(() => {
         const fetchPets = async () => {
             try {
-                const response = await axios.get('http://localhost:5000/pets');
+                const response = await axios.get('https://pet-adoption-jr7a.onrender.com/pets');
                 setPets(response.data.slice(0, 3)); // Get the top three pets
             } catch (err) {
                 console.log(err);

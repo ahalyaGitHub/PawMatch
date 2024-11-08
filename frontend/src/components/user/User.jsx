@@ -7,6 +7,7 @@ export default function User() {
     const [pets, setPets] = useState([]);
     const [interestedPets, setInterestedPets] = useState(new Set());
     const [searchTerm, setSearchTerm] = useState('');
+    const [isUpdating, setIsUpdating] = useState(false);
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -15,33 +16,40 @@ export default function User() {
 
     const fetchPets = async (query = '') => {
         try {
-            const url = query ? `http://localhost:5000/pets/search?search=${query}` : 'http://localhost:5000/pets';
+            const url = query ? `https://pet-adoption-jr7a.onrender.com/pets/search?search=${query}` : 'https://pet-adoption-jr7a.onrender.com/pets';
             const response = await axios.get(url);
-            setPets(response.data);
-
-            const interestedPetIds = await Promise.all(
-                response.data.map(async (pet) => {
-                    const statusResponse = await axios.get(`http://localhost:5000/adoptions/status/${pet._id}`);
-                    return statusResponse.data.status === 'interested' ? pet._id : null;
-                })
-            );
-            setInterestedPets(new Set(interestedPetIds.filter(id => id)));
+            const petsWithStatus = await Promise.all(response.data.map(async (pet) => {
+                const statusRes = await axios.get(`https://pet-adoption-jr7a.onrender.com/adoptions/status/${pet._id}`);
+                return { ...pet, status: statusRes.data.status };
+            }));
+            setPets(petsWithStatus);
+            const interestedPetIds = petsWithStatus
+                .filter(pet => pet.status === 'interested')
+                .map(pet => pet._id);
+            setInterestedPets(new Set(interestedPetIds));
         } catch (err) {
             console.error('Error fetching pets:', err.response ? err.response.data : err);
         }
     };
+    
 
     // Function to update the pet status (e.g., 'adopted' or 'interested')
     const updateStatus = async (petId, newStatus) => {
         try {
-            const response = await axios.put(`http://localhost:5000/pets/${petId}`, { status: newStatus });
+            const response = await axios.put(`https://pet-adoption-jr7a.onrender.com/pets/${petId}`, { status: newStatus });
             if (response.status === 200) {
+                setPets(prevPets =>
+                    prevPets.map(pet =>
+                        pet._id === petId ? { ...pet, status: newStatus } : pet
+                    )
+                );
+
                 // Update the interestedPets state after changing the status
                 setInterestedPets((prevState) => {
                     const updatedPets = new Set(prevState);
                     if (newStatus === 'adopted') {
                         updatedPets.delete(petId); // Remove from interestedPets if adopted
-                    } else {
+                    } else if (newStatus === 'interested') {
                         updatedPets.add(petId); // Add back to interestedPets if marked as interested
                     }
                     return updatedPets;
@@ -52,13 +60,12 @@ export default function User() {
         }
     };
 
-    const handleInterestedClick = (petId) => {
+    const handleInterestedClick = async (petId) => {
+        setIsUpdating(true);
         const token = localStorage.getItem('token');
         if (token) {
-            // If the pet is currently marked as 'interested', and the admin changes its status
             if (interestedPets.has(petId)) {
-                // Change the status to 'adopted' when the pet is already marked as 'interested'
-                updateStatus(petId, 'adopted');
+                await updateStatus(petId, 'adopted');
             } else {
                 navigate(`/adopt/${petId}`);
             }
@@ -66,8 +73,8 @@ export default function User() {
             alert('Please log in to express interest in adopting a pet.');
             navigate('/login');
         }
+        setIsUpdating(false);
     };
-
     const handleSearchChange = (e) => {
         const query = e.target.value;
         setSearchTerm(query);
@@ -105,13 +112,13 @@ export default function User() {
                                     <p className="text-gray-600"><span className="font-semibold">Description:</span> {pet.description}</p>
                                     <p className="text-gray-600"><span className="font-semibold">Vaccine:</span> {pet.vaccine}</p>
 
-                                    {interestedPets.has(pet._id) ? (
-                                        <p className="w-full text-gray-700 text-center py-2 font-bold">
-                                            <span className='text-red-500'>Status: </span>Interested
-                                        </p>
-                                    ) : pet.status === 'adopted' ? (
+                                    {pet.status === 'adopted' ? (
                                         <p className="w-full text-gray-700 text-center py-2 font-bold">
                                             <span className='text-red-500'>Status: </span>Adopted
+                                        </p>
+                                    ) : interestedPets.has(pet._id) ? (
+                                        <p className="w-full text-gray-700 text-center py-2 font-bold">
+                                            <span className='text-red-500'>Status: </span>Interested
                                         </p>
                                     ) : (
                                         <button

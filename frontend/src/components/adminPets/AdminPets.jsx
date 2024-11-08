@@ -13,9 +13,10 @@ export default function AdminPets() {
         fetchPets();
     }, []);
 
-    const fetchPets = async () => {
+    const fetchPets = async (query = '') => {
         try {
-            const response = await axios.get('http://localhost:5000/pets');
+            const url = query ? `https://pet-adoption-jr7a.onrender.com/pets/search?search=${query}` : 'https://pet-adoption-jr7a.onrender.com/pets';
+            const response = await axios.get(url);
             setPets(response.data);
         } catch (err) {
             console.error('Error fetching pets:', err.response ? err.response.data : err);
@@ -24,7 +25,7 @@ export default function AdminPets() {
 
     const handleDelete = async (petId) => {
         try {
-            await axios.delete(`http://localhost:5000/pets/${petId}`);
+            await axios.delete(`https://pet-adoption-jr7a.onrender.com/pets/${petId}`);
             fetchPets(); // Refresh the list after deletion
         } catch (err) {
             console.error('Error deleting pet:', err.response ? err.response.data : err);

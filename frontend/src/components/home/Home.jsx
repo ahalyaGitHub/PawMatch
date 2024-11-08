@@ -24,7 +24,7 @@ export default function Home() {
             if (role === 'admin') {
                 setUsername('Admin');
             } else {
-                fetch(`http://localhost:5000/users/${userId}`, {
+                fetch(`https://pet-adoption-jr7a.onrender.com/users/${userId}`, {
                     headers: {
                         'Authorization': `Bearer ${token}`
                     }
@@ -120,16 +120,16 @@ export default function Home() {
                         </div>
                     </div>
 
-                    {/* Middle and ContactInfo Section */}
-                    <div className="h-screen">
-                        <div ref={middleRef}>
-                            <Middle />
-                        </div>
-                        <div ref={contactRef}>
-                            <ContactInfo />
-                        </div>
+                   {/* Middle and ContactInfo Section */}
+<div className="flex flex-col h-screen">
+    <div ref={middleRef} className="flex-grow p-5">
+        <Middle />
+    </div>
+    <div ref={contactRef} className="flex-grow content-end">
+        <ContactInfo />
+    </div>
+</div>
 
-                    </div>
 
                 </>
             )}
