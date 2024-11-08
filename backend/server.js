@@ -16,7 +16,7 @@ app.use(cors());
 app.use('/uploads', express.static('uploads'));
 
 // MongoDB connection
-mongoose.connect('mongodb+srv://ahalyar2004:*****@cluster0.0q1sw.mongodb.net/pet-adoption', {})
+mongoose.connect('mongodb+srv://ahalyar2004:V3o4P54brHVOj2la@cluster0.0q1sw.mongodb.net/pet-adoption', {})
   .then(() => {
     console.log('MongoDB connected');
   })
