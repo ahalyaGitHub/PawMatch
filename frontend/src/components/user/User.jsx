@@ -16,10 +16,10 @@ export default function User() {
 
     const fetchPets = async (query = '') => {
         try {
-            const url = query ? `http://localhost:5000/pets/search?search=${query}` : 'http://localhost:5000/pets';
+            const url = query ? `https://pet-adoption-jr7a.onrender.com/pets/search?search=${query}` : 'https://pet-adoption-jr7a.onrender.com/pets';
             const response = await axios.get(url);
             const petsWithStatus = await Promise.all(response.data.map(async (pet) => {
-                const statusRes = await axios.get(`http://localhost:5000/adoptions/status/${pet._id}`);
+                const statusRes = await axios.get(`https://pet-adoption-jr7a.onrender.com/adoptions/status/${pet._id}`);
                 return { ...pet, status: statusRes.data.status };
             }));
             setPets(petsWithStatus);
@@ -36,7 +36,7 @@ export default function User() {
     // Function to update the pet status (e.g., 'adopted' or 'interested')
     const updateStatus = async (petId, newStatus) => {
         try {
-            const response = await axios.put(`http://localhost:5000/pets/${petId}`, { status: newStatus });
+            const response = await axios.put(`https://pet-adoption-jr7a.onrender.com/pets/${petId}`, { status: newStatus });
             if (response.status === 200) {
                 setPets(prevPets =>
                     prevPets.map(pet =>

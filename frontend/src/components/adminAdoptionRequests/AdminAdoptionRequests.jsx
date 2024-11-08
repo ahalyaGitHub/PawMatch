@@ -10,7 +10,7 @@ export default function AdminAdoptionRequests() {
         const fetchRequests = async () => {
             const token = localStorage.getItem('token');
             try {
-                const res = await fetch('http://localhost:5000/adoptions', {
+                const res = await fetch('https://pet-adoption-jr7a.onrender.com/adoptions', {
                     headers: {
                         'Authorization': `Bearer ${token}`,
                     }
@@ -18,12 +18,12 @@ export default function AdminAdoptionRequests() {
                 const requests = await res.json();
 
                 const detailedRequests = await Promise.all(requests.map(async (request) => {
-                    const userRes = await fetch(`http://localhost:5000/users/${request.userId}`, {
+                    const userRes = await fetch(`https://pet-adoption-jr7a.onrender.com/users/${request.userId}`, {
                         headers: {
                             'Authorization': `Bearer ${token}`,
                         }
                     });
-                    const petRes = await fetch(`http://localhost:5000/pets/${request.petId}`, {
+                    const petRes = await fetch(`https://pet-adoption-jr7a.onrender.com/pets/${request.petId}`, {
                         headers: {
                             'Authorization': `Bearer ${token}`,
                         }
@@ -48,7 +48,7 @@ export default function AdminAdoptionRequests() {
     const updateStatus = async (id, status) => {
         const token = localStorage.getItem('token');
         try {
-            await fetch(`http://localhost:5000/adoptions/${id}`, {
+            await fetch(`https://pet-adoption-jr7a.onrender.com/adoptions/${id}`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
@@ -61,7 +61,7 @@ export default function AdminAdoptionRequests() {
                 prev.map((req) => (req._id === id ? { ...req, status } : req))
             );
     
-            const petUpdateRes = await fetch(`http://localhost:5000/pets/status/${id}`, {
+            const petUpdateRes = await fetch(`https://pet-adoption-jr7a.onrender.com/pets/status/${id}`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
