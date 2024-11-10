@@ -5,28 +5,21 @@ const addAdoption = async (req, res) => {
     try {
         const { userId, petId, reasonToAdopt } = req.body;
 
-        // Check if required fields are present
         if (!userId || !petId || !reasonToAdopt) {
             return res.status(400).json({ error: "Missing required fields" });
         }
 
-        // Check if the pet is already marked as "interested" by another user
-        const existingAdoption = await Adoption.findOne({ petId, status: 'interested' });
+        // Check if the pet is already adopted
+        const existingAdoption = await Adoption.findOne({ petId, status: 'adopted' });
         if (existingAdoption) {
-            return res.status(400).json({ error: "This pet already has an interested user." });
+            return res.status(400).json({ error: "This pet has already been adopted." });
         }
 
-        // Check if the user has already shown interest in the pet
-        const userExistingAdoption = await Adoption.findOne({ userId, petId, status: 'interested' });
-        if (userExistingAdoption) {
-            return res.status(400).json({ error: "You have already expressed interest in this pet." });
-        }
-
-        // If no existing adoption, proceed to create the new adoption request
+        // Create the new adoption request
         const adoption = new Adoption({
             userId,
             petId,
-            status: 'interested',
+            status: 'interest-to-adopt',
             requestedDate: new Date(),
             reasonToAdopt,
         });
@@ -39,11 +32,16 @@ const addAdoption = async (req, res) => {
     }
 };
 
-// This will help us show a disabled "Interested" button if they've already expressed interest.
+// Check the adoption status of a pet
 const checkAdoptionStatus = async (req, res) => {
     const { petId } = req.params;
-    const adoption = await Adoption.findOne({ petId });
-    res.status(200).json({ status: adoption ? adoption.status : null });
+    try {
+        const adoption = await Adoption.findOne({ petId, status: 'interest-to-adopt' });
+        res.status(200).json({ status: adoption ? adoption.status : 'available' });
+    } catch (error) {
+        console.error("Error checking adoption status:", error);
+        res.status(500).json({ error: "Failed to check adoption status" });
+    }
 };
 
 // List all adoptions
@@ -61,33 +59,101 @@ const getParticularAdoption = async (req, res) => {
     try {
         const adoption = await Adoption.findById(req.params.id);
         if (!adoption) {
-            return res.status(404).json({ message: 'Adoption detail not found' });
+            return res.status(404).json({ message: 'Adoption request not found' });
         }
         res.status(200).json(adoption);
     } catch (err) {
-        res.status(500).json({ error: err.message });
+        console.error("Error retrieving adoption request:", err);
+        res.status(500).json({ message: "Server error", error: err.message });
     }
 };
 
-// Update adoption data
+
+// Update the adoption status (e.g., mark as adopted or rejected)
 const updateAdoption = async (req, res) => {
+    const { id } = req.params;  
+    const { status, reasonToReject } = req.body; 
+    const resolvedDate = new Date();  
+
     try {
-        const adoption = await Adoption.findById(req.params.id);
+        const adoption = await Adoption.findById(id);
+
         if (!adoption) {
-            return res.status(404).json({ message: 'Adoption detail not found' });
+            return res.status(404).json({ message: 'Adoption record not found' });
         }
-        adoption.set(req.body);
+
+        // Update the adoption status and resolved date
+        adoption.status = status;
+        adoption.resolvedDate = resolvedDate;  // Ensure the resolved date is set
+        if (status === 'revoke') {
+            adoption.reasonToReject = reasonToReject;  // Only add rejection reason if status is 'revoke'
+        }
+
         await adoption.save();
-        res.status(200).json(adoption);
+
+        res.status(200).json(adoption);  // Return the updated adoption record
     } catch (err) {
-        res.status(500).json({ error: err.message });
+        console.error('Error updating adoption status:', err);
+        res.status(500).json({ error: 'Failed to update adoption status' });
     }
 };
 
+
+// Get adoption history of a particular user
+const getAdoptionHistory = async (req, res) => {
+    try {
+        const userId = req.params.id;
+
+        const adoptionHistory = await Adoption.find({ userId })
+            .populate('petId', 'name breed age') // Adjust as per your pet model fields
+            .exec();
+
+        const history = {
+            interested: adoptionHistory.filter(adoption => adoption.status === 'interest-to-adopt'),
+            adopted: adoptionHistory.filter(adoption => adoption.status === 'adopted'),
+            rejected: adoptionHistory.filter(adoption => adoption.status === 'revoke'), // Corrected filter
+        };
+
+        res.json(history);
+    } catch (error) {
+        console.error('Error fetching adoption history:', error);
+        res.status(500).json({ message: 'Error fetching adoption history', error });
+    }
+};
+
+
+const checkOrCreateAdoption = async (req, res) => {
+    const { petId, userId } = req.params;
+
+    try {
+        // Check if the adoption record already exists
+        let adoption = await Adoption.findOne({ petId, userId });
+
+        if (!adoption) {
+            // If adoption record doesn't exist, create one with status 'available'
+            adoption = new Adoption({
+                petId,
+                userId,
+                status: 'available',  // Status can be 'available', 'adopted', etc.
+            });
+            await adoption.save();
+        }
+
+        // Return the adoption record (either existing or newly created)
+        res.status(200).json({ adoptionId: adoption._id, status: adoption.status });
+    } catch (err) {
+        console.error('Error checking or creating adoption:', err);
+        res.status(500).json({ message: 'Error handling adoption' });
+    }
+};
+
+// Export functions
 module.exports = {
     addAdoption,
     getAllAdoptions,
     getParticularAdoption,
     updateAdoption,
     checkAdoptionStatus,
+    getAdoptionHistory,
+    checkOrCreateAdoption,
 };

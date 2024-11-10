@@ -5,6 +5,7 @@ const addPet = async (req, res) => {
     try {
         const { category, breed, description, gender, vaccine, age } = req.body;
         const imageUrl = req.file ? `/uploads/${req.file.filename}` : '';
+        const ageInYears = age / 12;
 
         const pet = new Pet({
             pet_id,
@@ -13,7 +14,7 @@ const addPet = async (req, res) => {
             description,
             gender,
             vaccine,
-            age,
+            age: ageInYears,
             imageUrl
         });
 

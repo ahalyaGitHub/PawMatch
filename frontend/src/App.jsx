@@ -7,14 +7,20 @@ import Home from './components/home/Home';
 import AdoptionForm from './components/adoptionForm/AdoptionForm';
 import AdminDashboard from './components/adminDashboard/AdminDashboard';
 import AdminAdoptionRequests from './components/adminAdoptionRequests/AdminAdoptionRequests';
-import ContactInfo from './components/contactInfo/ContactInfo';
 import AdminPets from './components/adminPets/AdminPets';
 import AddPetForm from './components/addPetForm/AddPetForm';
+import History from './components/history/History';
 
 
 const ProtectedRoute = ({ children }) => {
-  const isLoggedIn = !!localStorage.getItem('token'); // Double exclamation to convert to boolean
+  const isLoggedIn = !!localStorage.getItem('token'); // Check if user is logged in
   return isLoggedIn ? children : <Navigate to="/login" replace />;
+};
+
+const ProtectedAdminRoute = ({ children }) => {
+  const token = localStorage.getItem('token');
+  const isAdmin = token ? JSON.parse(atob(token.split('.')[1])).role === 'admin' : false; // Check if the user is an admin
+  return isAdmin ? children : <Navigate to="/" replace />; // Redirect to homepage if not admin
 };
 
 export default function App() {
@@ -22,24 +28,59 @@ export default function App() {
     <Router>
       <Routes>
         <Route path="/" element={<Home />} />
-        <Route path='/admin/dashboard' element={<AdminDashboard />} />
-        <Route path="/admin/pets" element={<AdminPets />} />
-        <Route path="/admin/add" element={<AddPetForm /> } />
-        <Route path="/admin/edit/:id" element={<AddPetForm />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/login/admin" element={<Login isAdmin />} />       
-        <Route path='/admin/adoptionRequest' element={<AdminAdoptionRequests />} /> 
-        <Route path="/signup" element={<Signup />} />
+
+        {/* Admin Routes - Protected */}
+        <Route path="/admin/dashboard" element={
+          <ProtectedAdminRoute>
+            <AdminDashboard />
+          </ProtectedAdminRoute>
+        } />
+        <Route path="/admin/pets" element={
+          <ProtectedAdminRoute>
+            <AdminPets />
+          </ProtectedAdminRoute>
+        } />
+        <Route path="/admin/add" element={
+          <ProtectedAdminRoute>
+            <AddPetForm />
+          </ProtectedAdminRoute>
+        } />
+        <Route path="/admin/edit/:id" element={
+          <ProtectedAdminRoute>
+            <AddPetForm />
+          </ProtectedAdminRoute>
+        } />
+        <Route path="/admin/adoptionRequest" element={
+          <ProtectedAdminRoute>
+            <AdminAdoptionRequests />
+          </ProtectedAdminRoute>
+        } />
+
+        {/* User Routes - Protected */}
         <Route path="/pets" element={
           <ProtectedRoute>
             <User />
           </ProtectedRoute>
-        }/>
+        } />
         <Route path="/adopt/:petId" element={
           <ProtectedRoute>
             <AdoptionForm />
           </ProtectedRoute>
-        }/>
+        } />
+
+        {/* Authentication Routes */}
+        <Route path="/login" element={<Login />} />
+        <Route path="/login/admin" element={<Login isAdmin />} />
+        <Route path="/signup" element={<Signup />} />
+
+        {/* History Route */}
+        <Route path="/history" element={
+          <ProtectedRoute>
+            <History />
+          </ProtectedRoute>
+        } />
+
+       
       </Routes>
     </Router>
   );

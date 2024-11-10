@@ -45,7 +45,15 @@ export default function AdminAdoptionRequests() {
         fetchRequests();
     }, []);
 
-    const updateStatus = async (id, status) => {
+    // Function to handle rejection with reason
+    const handleReject = async (id) => {
+        const reason = prompt("Please provide a reason for rejection:");
+        if (!reason) return; // Abort if no reason is provided
+
+        await updateStatus(id, 'revoke', reason);
+    };
+
+    const updateStatus = async (id, status, reasonToReject = '') => {
         const token = localStorage.getItem('token');
         try {
             await fetch(`https://pet-adoption-jr7a.onrender.com/adoptions/${id}`, {
@@ -54,37 +62,29 @@ export default function AdminAdoptionRequests() {
                     'Content-Type': 'application/json',
                     'Authorization': `Bearer ${token}`
                 },
-                body: JSON.stringify({ status, resolvedDate: new Date() })
+                body: JSON.stringify({
+                    status,
+                    resolvedDate: new Date(),
+                    reasonToReject 
+                })
             });
     
-            setAdoptionRequests((prev) => 
-                prev.map((req) => (req._id === id ? { ...req, status } : req))
+            // Update the local state
+            setAdoptionRequests((prev) =>
+                prev.map((req) => (req._id === id ? { ...req, status, reasonToReject } : req))
             );
-    
-            const petUpdateRes = await fetch(`https://pet-adoption-jr7a.onrender.com/pets/status/${id}`, {
-                method: 'PUT',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`
-                },
-                body: JSON.stringify({ status })
-            });
-    
-            if (!petUpdateRes.ok) {
-                throw new Error('Failed to update pet status');
-            }
-    
         } catch (error) {
             console.error("Error updating adoption status:", error);
         }
     };
+    
 
     // Generate PDF for a single adoption request
     const generateSingleReport = (request) => {
         try {
             const doc = new jsPDF();
             doc.text('Adoption Request Report', 10, 10);
-            
+
             doc.text(`Adopter Name: ${request.user?.name || 'Not Available'}`, 10, 20);
             doc.text(`Email: ${request.user?.email || 'Not Available'}`, 10, 30);
             doc.text(`Phone: ${request.user?.phone || 'Not Available'}`, 10, 40);
@@ -94,6 +94,9 @@ export default function AdminAdoptionRequests() {
             doc.text(`Requested Date: ${new Date(request.requestedDate).toLocaleDateString()}`, 10, 80);
             doc.text(`Status: ${request.status}`, 10, 90);
             doc.text(`Resolved Date: ${request.resolvedDate ? new Date(request.resolvedDate).toLocaleDateString() : 'Pending'}`, 10, 100);
+            if (request.reasonToReject) {
+                doc.text(`Rejection Reason: ${request.reasonToReject}`, 10, 110);
+            }
 
             doc.save(`Adoption_Report_${request._id}.pdf`);
         } catch (error) {
@@ -157,6 +160,9 @@ export default function AdminAdoptionRequests() {
                                     <p className="text-gray-600"><strong>Reason:</strong> {request.reasonToAdopt}</p>
                                     <p className="text-gray-600"><strong>Status:</strong> <span className={`font-semibold ${request.status === 'adopted' ? 'text-green-600' : 'text-red-500'}`}>{request.status}</span></p>
                                     <p className="text-gray-600"><strong>Resolved Date:</strong> {request.resolvedDate ? new Date(request.resolvedDate).toLocaleDateString() : 'Pending'}</p>
+                                    {request.reasonToReject && (
+                                        <p className="text-gray-600"><strong>Rejection Reason:</strong> {request.reasonToReject}</p>
+                                    )}
                                 </div>
 
                                 <div className="space-y-4">
@@ -168,7 +174,7 @@ export default function AdminAdoptionRequests() {
 
                             <div className="flex justify-between mt-6 border-t pt-4">
                                 <button
-                                    onClick={() => updateStatus(request._id, 'revoke')}
+                                    onClick={() => handleReject(request._id)}
                                     className="bg-red-500 hover:bg-red-600 text-white font-semibold py-2 px-6 transition duration-300"
                                 >
                                     Rejected

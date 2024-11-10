@@ -26,6 +26,7 @@ export default function Login(props) {
                 setErrorMessage(errorData.message || 'Login failed');
                 return;
             }
+            console.log('response: ', response);
 
             const data = await response.json();
             const token = data.token; // Get token from response
@@ -37,6 +38,7 @@ export default function Login(props) {
 
             // Store the token in local storage
             localStorage.setItem('token', token);
+            localStorage.setItem('role', userRole);
 
             // Redirect based on user role
        

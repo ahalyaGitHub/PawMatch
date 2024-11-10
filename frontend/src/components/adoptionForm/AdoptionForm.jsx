@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { jwtDecode } from 'jwt-decode'; // Make sure to import without curly braces
+import { jwtDecode } from 'jwt-decode';
 import Navbar from '../navbar/Navbar';
 
-export default function AdoptionForm({ markPetAsRequested }) {
+export default function AdoptionForm() {
     const [reasonToAdopt, setReasonToAdopt] = useState('');
     const [isInterested, setIsInterested] = useState(false);
     const { petId } = useParams();
@@ -20,10 +20,14 @@ export default function AdoptionForm({ markPetAsRequested }) {
 
     useEffect(() => {
         const checkStatus = async () => {
-            const res = await fetch(`https://pet-adoption-jr7a.onrender.com/adoptions/status/${petId}`);
-            const data = await res.json();
-            if (data.status === 'interested') {
-                setIsInterested(true);
+            try {
+                const res = await fetch(`https://pet-adoption-jr7a.onrender.com/adoptions/status/${petId}`);
+                const data = await res.json();
+                if (data.status === 'interest-to-adopt') {
+                    setIsInterested(true);
+                }
+            } catch (error) {
+                console.error("Error checking adoption status:", error);
             }
         };
         checkStatus();
@@ -37,29 +41,39 @@ export default function AdoptionForm({ markPetAsRequested }) {
             return;
         }
     
+        const token = localStorage.getItem('token'); // Get token here
+    
+        if (!token) {
+            alert("You need to be logged in to submit an adoption request.");
+            return;
+        }
+    
         try {
             const res = await fetch('https://pet-adoption-jr7a.onrender.com/adoptions/add', {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`, 
+                },
                 body: JSON.stringify({ userId, petId, reasonToAdopt }),
             });
     
             if (res.ok) {
                 alert('Adoption request submitted successfully!');
-                markPetAsRequested(petId); // Notify User component to update pet status
                 setIsInterested(true);
-                navigate('/users');
+                navigate('/pets');
             } else {
                 const errorData = await res.json();
                 if (errorData.error === "This pet already has an interested user.") {
                     setIsInterested(true);
                     alert("This pet is already marked as 'interested' by another user.");
                 } else {
-                    alert(`Error: ${errorData.error}`);
+                    alert(`Error: ${errorData.error || 'An unexpected error occurred.'}`);
                 }
             }
         } catch (error) {
             console.error('Error submitting adoption request:', error);
+            alert('An error occurred while submitting your adoption request. Please try again.');
         }
     };
     

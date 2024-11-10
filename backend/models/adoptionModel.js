@@ -11,7 +11,7 @@ const AdoptionSchema = new mongoose.Schema({
         ref: 'Pet',
         required: true
     },
-    status: { type: String, enum: ['interested', 'revoke', 'adopted'], required: true},
+    status: { type: String, enum: ['revoke', 'adopted', 'interest-to-adopt']},
     requestedDate: { type: Date },
     resolvedDate: { type: Date },
     reasonToAdopt: { type: String },
@@ -20,15 +20,3 @@ const AdoptionSchema = new mongoose.Schema({
 
 const Adoption = mongoose.model( 'Adoption', AdoptionSchema, 'adoptionDetails');
 module.exports= Adoption;
-
-/*
-{
-    "userId": "672244dc9bb6e393ed40d882",
-    "petId": "6721ef59399fa0e1bf48209d", 
-    "status": "requested",
-    "requestedDate": "2024-10-30T00:00:00Z",
-    "resolvedDate": null,
-    "reasonToAdopt": "I've always wanted a dog and have a big yard.",
-    "reasonToReject": ""
-}
-*/
