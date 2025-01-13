@@ -16,7 +16,7 @@ const History = () => {
             const decoded = jwtDecode(token);
             const userId = decoded.id;
             try {
-                const response = await axios.get(`http://localhost:5000/adoptions/history/${userId}`);
+                const response = await axios.get(`https://pet-adoption-jr7a.onrender.com/adoptions/history/${userId}`);
                 console.log('Fetched History:', response.data);
                 setHistory(response.data);
             } catch (error) {

@@ -21,7 +21,7 @@ export default function AdoptionForm() {
     useEffect(() => {
         const checkStatus = async () => {
             try {
-                const res = await fetch(`http://localhost:5000/adoptions/status/${petId}`);
+                const res = await fetch(`https://pet-adoption-jr7a.onrender.com/adoptions/status/${petId}`);
                 const data = await res.json();
                 if (data.status === 'interest-to-adopt') {
                     setIsInterested(true);
@@ -49,7 +49,7 @@ export default function AdoptionForm() {
         }
     
         try {
-            const res = await fetch('http://localhost:5000/adoptions/add', {
+            const res = await fetch('https://pet-adoption-jr7a.onrender.com/adoptions/add', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

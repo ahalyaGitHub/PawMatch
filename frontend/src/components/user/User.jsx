@@ -13,10 +13,10 @@ export default function User() {
 
   const fetchPets = async (query = '') => {
     try {
-      const url = query ? `http://localhost:5000/pets/search?search=${query}` : 'http://localhost:5000/pets';
+      const url = query ? `https://pet-adoption-jr7a.onrender.com/pets/search?search=${query}` : 'https://pet-adoption-jr7a.onrender.com/pets';
       const response = await axios.get(url);
       const petsWithStatus = await Promise.all(response.data.map(async (pet) => {
-        const statusRes = await axios.get(`http://localhost:5000/adoptions/status/${pet._id}`);
+        const statusRes = await axios.get(`https://pet-adoption-jr7a.onrender.com/adoptions/status/${pet._id}`);
         return { ...pet, status: statusRes.data.status };
       }));
       const availablePets = petsWithStatus.filter(pet => pet.status !== 'adopted'); // Filter out adopted pets
@@ -30,7 +30,7 @@ export default function User() {
     const token = localStorage.getItem('token');
     if (token) {
       try {
-        const response = await axios.get(`http://localhost:5000/adoptions/status/${petId}`);
+        const response = await axios.get(`https://pet-adoption-jr7a.onrender.com/adoptions/status/${petId}`);
         if (response.data.status === 'available' || response.data.status === 'revoke') {
           navigate(`/adopt/${petId}`);
         } else if (response.data.status === 'adopted') {
