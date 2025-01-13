@@ -22,7 +22,7 @@ export default function AddPetsForm() {
             // Fetch the pet's existing data if editing
             const fetchPet = async () => {
                 try {
-                    const response = await axios.get(`https://pet-adoption-jr7a.onrender.com/pets/${id}`);
+                    const response = await axios.get(`http://localhost:5000/pets/${id}`);
                     setFormData(response.data);
                 } catch (err) {
                     console.error('Error fetching pet details:', err);
@@ -50,11 +50,11 @@ export default function AddPetsForm() {
     
         try {
             if (id) {
-                await axios.put(`https://pet-adoption-jr7a.onrender.com/pets/${id}`, formDataToSend, {
+                await axios.put(`http://localhost:5000/pets/${id}`, formDataToSend, {
                     headers: { 'Content-Type': 'multipart/form-data' },
                 });
             } else {
-                await axios.post('https://pet-adoption-jr7a.onrender.com/pets', formDataToSend, {
+                await axios.post('http://localhost:5000/pets', formDataToSend, {
                     headers: { 'Content-Type': 'multipart/form-data' },
                 });
             }

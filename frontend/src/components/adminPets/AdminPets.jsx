@@ -15,7 +15,7 @@ export default function AdminPets() {
 
     const fetchPets = async (query = '') => {
         try {
-            const url = query ? `https://pet-adoption-jr7a.onrender.com/pets/search?search=${query}` : 'https://pet-adoption-jr7a.onrender.com/pets';
+            const url = query ? `http://localhost:5000/pets/search?search=${query}` : 'http://localhost:5000/pets';
             const response = await axios.get(url);
             setPets(response.data);
         } catch (err) {
@@ -25,7 +25,7 @@ export default function AdminPets() {
 
     const handleDelete = async (petId) => {
         try {
-            await axios.delete(`https://pet-adoption-jr7a.onrender.com/pets/${petId}`);
+            await axios.delete(`http://localhost:5000/pets/${petId}`);
             fetchPets(); // Refresh the list after deletion
         } catch (err) {
             console.error('Error deleting pet:', err.response ? err.response.data : err);
@@ -40,8 +40,8 @@ export default function AdminPets() {
 
     return (
         <>
-        <Navbar />
-        <div className="container mx-auto mt-8 px-4">
+            <Navbar />
+            <div className="container mx-auto mt-8 px-4">
 
                 {/* Search Input */}
                 <div className="mb-6">
@@ -53,41 +53,56 @@ export default function AdminPets() {
                         className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:border-blue-500"
                     />
                 </div>
-            <button
-                onClick={() => navigate('/admin/add')}
-                className="bg-green-500 text-white px-4 py-2 rounded mb-4"
-            >
-                Add Pet
-            </button>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                {pets.map((pet) => (
-                    <div key={pet._id} className="bg-white shadow-lg overflow-hidden">
-                        <img src={pet.imageUrl} alt={pet.name} className="h-64 w-full object-cover" />
-                        <div className="p-4">
-                            <h5 className="text-xl font-bold">{pet.pet_id}</h5>
-                            <p>Category: {pet.category}</p>
-                            <p>Breed: {pet.breed}</p>
-                            <p>Age: {pet.age}</p>
-                            
-                            <p>Gender: {pet.gender}</p>
-                            <p>Vaccine: {pet.vaccine}</p>
-                            <p>Description: {pet.description}</p>
+                <button
+                    onClick={() => navigate('/admin/add')}
+                    className="bg-green-500 text-white px-4 py-2 rounded mb-4"
+                >
+                    Add Pet
+                </button>
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {pets.map((pet) => (
+                        <div key={pet._id} className="bg-white shadow-lg overflow-hidden rounded-lg">
+                            <img
+                                src={pet.imageUrl}
+                                alt={pet.name}
+                                className="h-64 w-full object-cover rounded-t-lg"
+                            />
+                            <div className="p-6">
+                                <h5 className="text-2xl font-bold mb-4 text-gray-800 text-center">{pet.pet_id}</h5>
 
-                            <div className="flex justify-between mt-4">
-                                <FaEdit
-                                    onClick={() => navigate(`/admin/edit/${pet._id}`)}
-                                    className="cursor-pointer text-blue-500"
-                                />
-                                <FaTrashAlt
-                                    onClick={() => handleDelete(pet._id)}
-                                    className="cursor-pointer text-red-500"
-                                />
+                                <div className="space-y-2 text-base text-gray-600">
+                                    {[
+                                        { label: "Category", value: pet.category },
+                                        { label: "Breed", value: pet.breed },
+                                        { label: "Age", value: `${pet.age} years` },
+                                        { label: "Gender", value: pet.gender },
+                                        { label: "Vaccine", value: pet.vaccine ? "Yes" : "No" },
+                                        { label: "Description", value: pet.description },
+                                    ].map(({ label, value }) => (
+                                        <div key={label} className="flex">
+                                            <p className="font-bold w-1/3">{label}:</p>
+                                            <p className="w-2/3">{value}</p>
+                                        </div>
+                                    ))}
+                                </div>
+
+                                <div className="flex justify-between items-center mt-6">
+                                    <FaEdit
+                                        onClick={() => navigate(`/admin/edit/${pet._id}`)}
+                                        className="cursor-pointer text-blue-500 hover:text-blue-700"
+                                        size={20}
+                                    />
+                                    <FaTrashAlt
+                                        onClick={() => handleDelete(pet._id)}
+                                        className="cursor-pointer text-red-500 hover:text-red-700"
+                                        size={20}
+                                    />
+                                </div>
                             </div>
                         </div>
-                    </div>
-                ))}
+                    ))}
+                </div>
             </div>
-        </div>
         </>
     );
 }

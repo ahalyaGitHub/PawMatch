@@ -9,7 +9,7 @@ export default function Middle() {
     useEffect(() => {
         const fetchPets = async () => {
             try {
-                const response = await axios.get('https://pet-adoption-jr7a.onrender.com/pets');
+                const response = await axios.get('http://localhost:5000/pets');
                 setPets(response.data.slice(0, 3)); // Get the top three pets
             } catch (err) {
                 console.log(err);
@@ -35,18 +35,27 @@ export default function Middle() {
                     <p className="text-center text-gray-600">No pets available</p>
                 ) : (
                     pets.map((pet) => (
-                        <div key={pet._id} className="bg-white shadow-lg overflow-hidden">
+                        <div key={pet._id} className="bg-white shadow-lg overflow-hidden rounded-lg">
                             <img src={pet.imageUrl} alt={pet.name} className="h-64 w-full object-cover" />
                             <div className="p-4">
-                                <h5 className="text-xl font-bold text-gray-800">{pet.name}</h5>
-                                <p className="text-gray-600"><span className="font-semibold">Age:</span> {pet.age}</p>
-                                <p className="text-gray-600"><span className="font-semibold">Category:</span> {pet.category}</p>
-                                <p className="text-gray-600"><span className="font-semibold">Gender:</span> {pet.gender}</p>
-                                <p className="text-gray-600"><span className="font-semibold">Breed:</span> {pet.breed}</p>
-                                <p className="text-gray-600"><span className="font-semibold">Description:</span> {pet.description}</p>
-                                <p className="text-gray-600"><span className="font-semibold">Vaccine:</span> {pet.vaccine}</p>
+                                <h5 className="text-xl font-bold text-gray-800 mb-2">{pet.name}</h5>
+                                <div className="space-y-2 text-base text-gray-600">
+                                    {[
+                                        { label: 'Age', value: `${pet.age} years` },
+                                        { label: 'Category', value: pet.category },
+                                        { label: 'Gender', value: pet.gender },
+                                        { label: 'Breed', value: pet.breed },
+                                        { label: 'Description', value: pet.description },
+                                        { label: 'Vaccine', value: pet.vaccine ? 'Yes' : 'No' },
+                                    ].map(({ label, value }) => (
+                                        <div key={label} className="flex">
+                                            <p className="font-semibold w-1/3">{label}:</p>
+                                            <p className="w-2/3">{value}</p>
+                                        </div>
+                                    ))}
+                                </div>
                                 <button
-                                    className="mt-4 bg-blue-500 text-white px-4 py-2 hover:bg-blue-600 font-semibold"
+                                    className="mt-4 bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 font-semibold w-full"
                                     onClick={handleInterestedClick}
                                 >
                                     Interested

@@ -3,7 +3,7 @@ const Pet = require('../models/petModel');
 // Create pet data
 const addPet = async (req, res) => {
     try {
-        const { category, breed, description, gender, vaccine, age } = req.body;
+        const { pet_id, category, breed, description, gender, vaccine, age } = req.body;
         const imageUrl = req.file ? `/uploads/${req.file.filename}` : '';
         const ageInYears = age / 12;
 

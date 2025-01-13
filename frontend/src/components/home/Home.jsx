@@ -24,7 +24,7 @@ export default function Home() {
             if (role === 'admin') {
                 setUsername('Admin');
             } else {
-                fetch(`https://pet-adoption-jr7a.onrender.com/users/${userId}`, {
+                fetch(`http://localhost:5000/users/${userId}`, {
                     headers: {
                         'Authorization': `Bearer ${token}`
                     }
