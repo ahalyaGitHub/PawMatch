@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import {jwtDecode} from 'jwt-decode';
+import { jwtDecode } from 'jwt-decode';
 
 export default function Login(props) {
     const { isAdmin } = props
@@ -41,9 +41,9 @@ export default function Login(props) {
             localStorage.setItem('role', userRole);
 
             // Redirect based on user role
-       
-                navigate('/'); // Redirect to home page
-            
+
+            navigate('/'); // Redirect to home page
+
         } catch (error) {
             console.error('Error:', error.message);
             setErrorMessage('Wrong email or password');
@@ -84,32 +84,32 @@ export default function Login(props) {
                             Log in
                         </button>
                     </div>
-                    
+
                     <div>
-    {isAdmin ? (
-        <div className="flex justify-center text-gray-500 text-sm font-semibold">
-            <span>Login as user?</span>
-            <Link to="/login" className="text-sky-500 ml-1 hover:underline">
-                User Login
-            </Link>
-        </div>
-    ) : (
-        <div>
-            <div className="flex justify-center text-gray-500 text-sm font-semibold">
-                <span>Don’t have an account?</span>
-                <Link to="/signup" className="text-sky-500 ml-1 hover:underline">
-                    Signup
-                </Link>
-            </div>
-            <div className="flex justify-center text-gray-500 text-sm font-semibold mt-3">
-                <span>Login as admin?</span>
-                <Link to="/login/admin" className="text-sky-500 ml-1 hover:underline">
-                    Admin Login
-                </Link>
-            </div>
-        </div>
-    )}
-</div>
+                        {isAdmin ? (
+                            <div className="flex justify-center text-gray-500 text-sm font-semibold">
+                                <span>Login as user?</span>
+                                <Link to="/login" className="text-sky-500 ml-1 hover:underline">
+                                    User Login
+                                </Link>
+                            </div>
+                        ) : (
+                            <div>
+                                <div className="flex justify-center text-gray-500 text-sm font-semibold">
+                                    <span>Don’t have an account?</span>
+                                    <Link to="/signup" className="text-sky-500 ml-1 hover:underline">
+                                        Signup
+                                    </Link>
+                                </div>
+                                <div className="flex justify-center text-gray-500 text-sm font-semibold mt-3">
+                                    <span>Login as admin?</span>
+                                    <Link to="/login/admin" className="text-sky-500 ml-1 hover:underline">
+                                        Admin Login
+                                    </Link>
+                                </div>
+                            </div>
+                        )}
+                    </div>
 
                 </form>
             </div>
