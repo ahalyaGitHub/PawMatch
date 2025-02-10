@@ -105,7 +105,7 @@ const getAdoptionHistory = async (req, res) => {
         const userId = req.params.id;
 
         const adoptionHistory = await Adoption.find({ userId })
-            .populate('petId', 'name breed age') // Adjust as per your pet model fields
+            .populate({path:'petId', select: 'name breed age', strictPopulate: false}) // Adjust as per your pet model fields
             .exec();
 
         const history = {

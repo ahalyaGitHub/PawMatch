@@ -4,10 +4,13 @@ import { Link } from 'react-router-dom';
 export default function Navbar() {
     return (
         <nav className="bg-sky-500 p-4 shadow-md">
-            
-                <div className="container mx-auto flex justify-between items-center h-20">
-                    <Link to="/" className="text-2xl font-bold pl-4 text-white">Pet Adoption Center</Link>
-                </div>
-            </nav>
+
+            <div className="container mx-auto flex justify-between items-center h-20">
+                <Link to="/" className="flex flex-row gap-2 text-3xl text-white font-semibold justify-center items-center">
+                    <img src="/logo.png" alt="logo" width={45} />
+                    <p>PAW MATCH</p>
+                </Link>
+            </div>
+        </nav>
     );
 }

@@ -67,19 +67,22 @@ export default function Home() {
             {/* Navbar */}
             <nav className="bg-sky-500 p-4 shadow-md">
                 <div className="container mx-auto flex justify-between items-center h-20">
-                    <a href="#" className="text-2xl font-bold pl-4 text-white">Pet Adoption Center</a>
+                    <Link to="/" className="flex flex-row gap-2 text-3xl text-white font-semibold justify-center items-center">
+                        <img src="/logo.png" alt="logo" width={45} />
+                        <p>PAW MATCH</p>
+                    </Link>
                     <div className="flex space-x-6">
                         {username ? (
                             <>
-                                <span className="text-lg font-bold text-white">
+                                <span className="text-xl font-semibold text-white">
                                     Logged in as {isAdmin ? 'Admin' : username}
                                 </span>
-                                <button onClick={handleLogout} className="text-lg font-bold text-white hover:text-sky-500">Log out</button>
+                                <button onClick={handleLogout} className="text-xl font-semibold bg-white text-sky-500 px-2 py-1 hover:bg-sky-100">Log out</button>
                             </>
                         ) : (
-                            <Link to="/login" className="text-lg font-bold text-white hover:text-sky-500">Log in</Link>
+                            <Link to="/login" className="text-xl font-semibold bg-white text-sky-500 px-2 py-1 rounded hover:bg-sky-100">Log in</Link>
                         )}
-                        <button className="text-lg font-bold text-white hover:text-sky-500" onClick={handleContactScroll}>Contact</button>
+                        <button className="text-xl font-semibold bg-white text-sky-500 px-2 py-1 rounded hover:bg-sky-100" onClick={handleContactScroll}>Contact</button>
                     </div>
                 </div>
             </nav>
@@ -113,22 +116,22 @@ export default function Home() {
                                 <p className="text-gray-600 text-lg">
                                     Find your perfect pet companion today. Our center is dedicated to helping animals find loving homes.
                                 </p>
-                                <button className="text-white bg-sky-500 px-6 py-3 rounded font-semibold text-lg hover:bg-sky-600 transition duration-300" onClick={handleMiddleScroll}>
-                                    Get Started
+                                <button className="text-white bg-sky-500 px-6 py-3 font-semibold text-lg hover:bg-sky-600 transition duration-300" onClick={handleMiddleScroll}>
+                                    Find your pawfect match
                                 </button>
                             </div>
                         </div>
                     </div>
 
-                   {/* Middle and ContactInfo Section */}
-<div className="flex flex-col h-screen">
-    <div ref={middleRef} className="flex-grow p-5">
-        <Middle />
-    </div>
-    <div ref={contactRef} className="flex-grow content-end">
-        <ContactInfo />
-    </div>
-</div>
+                    {/* Middle and ContactInfo Section */}
+                    <div className="flex flex-col h-screen">
+                        <div ref={middleRef} className="flex-grow p-5">
+                            <Middle />
+                        </div>
+                        <div ref={contactRef} className="flex-grow content-end">
+                            <ContactInfo />
+                        </div>
+                    </div>
 
 
                 </>

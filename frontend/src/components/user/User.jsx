@@ -57,9 +57,12 @@ export default function User() {
     <>
       <nav className="bg-sky-500 p-4 shadow-md">
         <div className="container mx-auto flex justify-between items-center h-20">
-          <Link to="/" className="text-2xl font-bold pl-4 text-white">Pet Adoption Center</Link>
+          <Link to="/" className="flex flex-row gap-2 text-3xl text-white font-semibold justify-center items-center">
+            <img src="/logo.png" alt="logo" width={45} />
+            <p>PAW MATCH</p>
+          </Link>
           <div className="flex space-x-6">
-            <Link to="/history" className="text-lg font-bold text-white hover:text-sky-500">History</Link>
+            <Link to="/history" className="text-xl font-semibold bg-white text-sky-500 px-2 py-2 rounded hover:bg-sky-100">Adoption History</Link>
           </div>
         </div>
       </nav>
@@ -78,7 +81,7 @@ export default function User() {
             <p className="text-center text-gray-600">No pets available</p>
           ) : (
             pets.map((pet) => (
-              <div key={pet._id} className="bg-white shadow-lg rounded-lg overflow-hidden">
+              <div key={pet._id} className="bg-white shadow-lg overflow-hidden">
                 <img src={pet.imageUrl} alt={pet.name} className="h-64 w-full object-cover" />
                 <div className="p-4">
                   <h5 className="text-xl font-bold text-gray-800 mb-4">{pet.pet_id}</h5>
