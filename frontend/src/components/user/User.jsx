@@ -78,7 +78,7 @@ export default function User() {
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {pets.length === 0 ? (
-            <p className="text-center text-gray-600">No pets available</p>
+            <p className="text-center text-gray-600">Pet details Loading...</p>
           ) : (
             pets.map((pet) => (
               <div key={pet._id} className="bg-white shadow-lg overflow-hidden">
