@@ -67,22 +67,22 @@ export default function Home() {
             {/* Navbar */}
             <nav className="bg-sky-500 p-4 shadow-md">
                 <div className="container mx-auto flex justify-between items-center h-20">
-                    <Link to="/" className="flex flex-row gap-2 text-3xl text-white font-semibold justify-center items-center">
-                        <img src="/logo.png" alt="logo" width={45} />
+                    <Link to="/" className="flex flex-row gap-2 text-2xl ms-24 text-white font-bold justify-center items-center">
+                        <img src="/logo.png" alt="logo" width={40} />
                         <p>PAW MATCH</p>
                     </Link>
                     <div className="flex space-x-6">
                         {username ? (
                             <>
-                                <span className="text-xl font-semibold text-white">
+                                <span className="text-lg font-semibold text-white">
                                     Logged in as {isAdmin ? 'Admin' : username}
                                 </span>
-                                <button onClick={handleLogout} className="text-xl font-semibold bg-white text-sky-500 px-2 py-1 hover:bg-sky-100">Log out</button>
+                                <button onClick={handleLogout} className=" font-semibold bg-white text-sky-500 px-2 py-1 rounded hover:bg-sky-100">Log out</button>
                             </>
                         ) : (
-                            <Link to="/login" className="text-xl font-semibold bg-white text-sky-500 px-2 py-1 rounded hover:bg-sky-100">Log in</Link>
+                            <Link to="/login" className="font-semibold bg-white text-sky-500 px-2 py-1 rounded hover:bg-sky-100">Log in</Link>
                         )}
-                        <button className="text-xl font-semibold bg-white text-sky-500 px-2 py-1 rounded hover:bg-sky-100" onClick={handleContactScroll}>Contact</button>
+                        <button className="font-semibold bg-white text-sky-500 px-2 py-1 rounded hover:bg-sky-100" onClick={handleContactScroll}>Contact</button>
                     </div>
                 </div>
             </nav>
